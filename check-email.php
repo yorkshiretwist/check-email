@@ -3,6 +3,7 @@
 Plugin Name: Check Email
 Plugin URI: http://www.stillbreathing.co.uk/wordpress/check-email/
 Description: Check email allows you to test if your WordPress installation is sending emails correctly.
+Text Domain: check-email
 Version: 0.3
 Author: Chris Taylor
 Author URI: http://www.stillbreathing.co.uk
@@ -22,7 +23,7 @@ $register->Plugin_Register();
 // add the admin menu option
 add_action( 'admin_menu', 'checkemail_add_admin' );
 function checkemail_add_admin() {
-	add_submenu_page( 'tools.php', __("Check Email", "checkemail"), __("Check Email", "checkemail"), 'edit_users', 'checkemail', 'checkemail' );
+	add_submenu_page( 'tools.php', __("Check Email", "check-email"), __("Check Email", "check-email"), 'edit_users', 'checkemail', 'checkemail' );
 }
 
 // add the JavaScript
@@ -80,21 +81,27 @@ function checkemail() {
 	if (isset( $_POST["checkemail_to"]) && $_POST["checkemail_to"] != "" )
 	{
 		$headers = checkemail_send( $_POST["checkemail_to"], $_POST["checkemail_headers"] );
-		echo '<div class="updated"><p>' . __( 'The test email has been sent by WordPress. Please note this does NOT mean it has been delivered. See <a href="http://codex.wordpress.org/Function_Reference/wp_mail">wp_mail in the Codex</a> for more information. The headers sent were:', "checkemail" ) . '</p><pre>' . str_replace( chr( 10 ), '\n' . "\n", str_replace( chr( 13 ), '\r', $headers ) ) . '</pre></div>';
+		echo '<div class="updated"><p>' . __( 'The test email has been sent by WordPress. Please note this does NOT mean it has been delivered. See <a href="http://codex.wordpress.org/Function_Reference/wp_mail">wp_mail in the Codex</a> for more information. The headers sent were:', "check-email" ) . '</p><pre>' . str_replace( chr( 10 ), '\n' . "\n", str_replace( chr( 13 ), '\r', $headers ) ) . '</pre></div>';
 	}
 		
 	echo '
 	<h2>' . __( "Check Email" ) . '</h2>
 	
+	<h3>' . __( "Current mail settings", "check-email" ) . '</h3>
+	<p>' . __( "SendMail path (UNIX):", "check-email" ) . ' ' . ini_get("sendmail_path") . '</p>
+	<p>' . __( "SMTP server (Windows):", "check-email" ) . ' ' . ini_get("SMTP") . '</p>
+	<p>' . __( "SMTP port (Windows):", "check-email" ) . ' ' . ini_get("smtp_port") . '</p>
+	<p>' . __( "Add X header:", "check-email" ) . ' ' . ini_get("mail.add_x_header") . '</p>
+	
+	<h3>' . __( "Send a test email", "check-meail" ) . '</h3>
 	<form action="tools.php?page=checkemail" method="post">
-	<p>SMTP server: ' . ini_get("SMTP") . '</p>
-	<p><label for="checkemail_to">' . __( "Send test email to:", "checkemail" ) . '</label>
+	<p><label for="checkemail_to">' . __( "Send test email to:", "check-email" ) . '</label>
 	<input type="text" name="checkemail_to" id="checkemail_to" class="text"';
 		if ( isset( $_POST["checkemail_to"] ) ) {
 			echo ' value="' . $_POST["checkemail_to"] . '"';
 		}
 		echo ' /></p>
-	<p><label for="checkemail_autoheaders">' . __( "Use standard headers", "checkemail" ) . '</label>
+	<p><label for="checkemail_autoheaders">' . __( "Use standard headers", "check-email" ) . '</label>
 	<input type="radio" id="checkemail_autoheaders" name="checkemail_headers" value="auto"';
 	if ( !isset($_POST["checkemail_headers"]) || $_POST["checkemail_headers"] == "auto" ){
 		echo ' checked="checked"';
@@ -107,7 +114,7 @@ function checkemail() {
 	echo '>MIME-Version: 1.0
 From: ' . $current_user->user_email . '
 Content-Type: text/plain; charset="' . get_option( 'blog_charset' ) . '"</pre>
-	<p><label for="checkemail_customheaders">' . __( "Use custom headers", "checkemail" ) . '</label>
+	<p><label for="checkemail_customheaders">' . __( "Use custom headers", "check-email" ) . '</label>
 	<input type="radio" id="checkemail_customheaders" name="checkemail_headers" value="custom"';
 	if ( isset($_POST["checkemail_headers"]) && $_POST["checkemail_headers"] == "custom" ){
 		echo ' checked="checked"';
@@ -118,8 +125,8 @@ Content-Type: text/plain; charset="' . get_option( 'blog_charset' ) . '"</pre>
 		echo ' class="checkemail-hide"';
 	}
 	echo '>
-		<p>' . __( "Set your custom headers below", "checkemail" ) . '</p>
-		<p><label for="checkemail_mime">' . __( "MIME Version", "checkemail" ) . '</label>
+		<p>' . __( "Set your custom headers below", "check-email" ) . '</p>
+		<p><label for="checkemail_mime">' . __( "MIME Version", "check-email" ) . '</label>
 		<input type="text" name="checkemail_mime" id="checkemail_mime" value="';
 		if ( isset( $_POST["checkemail_mime"] ) ) {
 			echo $_POST["checkemail_mime"];
@@ -127,7 +134,7 @@ Content-Type: text/plain; charset="' . get_option( 'blog_charset' ) . '"</pre>
 			echo '1.0';
 		}
 		echo '" /></p>
-		<p><label for="checkemail_type">' . __( "Content type", "checkemail" ) . '</label>
+		<p><label for="checkemail_type">' . __( "Content type", "check-email" ) . '</label>
 		<input type="text" name="checkemail_type" id="checkemail_type" value="';
 		if ( isset( $_POST["checkemail_type"] ) ) {
 			echo $_POST["checkemail_type"];
@@ -135,7 +142,7 @@ Content-Type: text/plain; charset="' . get_option( 'blog_charset' ) . '"</pre>
 			echo 'text/html; charset=iso-8859-1';
 		}
 		echo '" class="text"  /></p>
-		<p><label for="checkemail_from">' . __( "From", "checkemail" ) . '</label>
+		<p><label for="checkemail_from">' . __( "From", "check-email" ) . '</label>
 		<input type="text" name="checkemail_from" id="checkemail_from" value="';
 		if ( isset( $_POST["checkemail_from"] ) ) {
 			echo $_POST["checkemail_from"];
@@ -143,13 +150,13 @@ Content-Type: text/plain; charset="' . get_option( 'blog_charset' ) . '"</pre>
 			echo $current_user->user_email;
 		}
 		echo '" class="text"  /></p>
-		<p><label for="checkemail_cc">' . __( "CC", "checkemail" ) . '</label>
+		<p><label for="checkemail_cc">' . __( "CC", "check-email" ) . '</label>
 		<textarea name="checkemail_cc" id="checkemail_cc" cols="30" rows="4" class="text">';
 		if ( isset( $_POST["checkemail_cc"] ) ) {
 			echo $_POST["checkemail_cc"];
 		}
 		echo '</textarea></p>
-		<p><label for="checkemail_break_n">' . __( "Header line break type", "checkemail" ) . '</label>
+		<p><label for="checkemail_break_n">' . __( "Header line break type", "check-email" ) . '</label>
 		<input type="radio" name="checkemail_break" id="checkemail_break_n" value="\n"';
 		if ( !isset( $_POST["checkemail_break"] ) || $_POST["checkemail_break"] == '\n' ) {
 			echo ' checked="checked"';
@@ -161,8 +168,8 @@ Content-Type: text/plain; charset="' . get_option( 'blog_charset' ) . '"</pre>
 		}
 		echo ' /> \r\n</p>
 	</div>
-	<p><label for="checkemail_go" class="checkemail-hide">' . __( "Send", "checkemail" ) . '</label>
-	<input type="submit" name="checkemail_go" id="checkemail_go" class="button-primary" value="' . __( "Send test email", "checkemail" ) . '" /></p>
+	<p><label for="checkemail_go" class="checkemail-hide">' . __( "Send", "check-email" ) . '</label>
+	<input type="submit" name="checkemail_go" id="checkemail_go" class="button-primary" value="' . __( "Send test email", "check-email" ) . '" /></p>
 	</form>
 	
 	</div>
@@ -187,7 +194,8 @@ function checkemail_send($to, $headers = "auto") {
 		"Cc: " . trim( $_POST["checkemail_cc"] ) . $break .
 		"Content-Type: " . trim( $_POST["checkemail_type"] ) . $break;
 	}
-	wp_mail( $to, "Test email from ".get_bloginfo("url"), "This test email proves that your WordPress installation at ".get_bloginfo( "url" )." can send emails.\n\nSent: " . date( "r" ), $headers );
+	$title = __( sprintf( "Test email from %s ", get_bloginfo("url") ), "check-email" );
+	$body = __( sprintf( 'This test email proves that your WordPress installation at %1$s can send emails.\n\nSent: %2$s', get_bloginfo( "url" ), date( "r" ) ), "check-email" );
+	wp_mail( $to, $title, $body, $headers );
 	return $headers;
 }
-?>
